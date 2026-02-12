@@ -1,0 +1,127 @@
+---
+import BalanceCard from '../../components/savecash/BalanceCard.astro'
+import PageHeader from '../../components/savecash/PageHeader.astro'
+import TransactionForm from '../../components/savecash/TransactionForm.astro'
+import Layout from '../../layouts/Layout.astro'
+import { getBalance } from '../../lib/db'
+
+const userId = 1
+const balanceData = getBalance(userId)
+const initialBalance = balanceData.success && balanceData.balance !== undefined ? balanceData.balance : 0
+const userName = balanceData.userName || 'Usuario'
+---
+
+<Layout>
+  <main class='font-sans w-full h-screen bg-white' transition:name='main-cta'>
+    <div class='max-w-7xl mx-auto p-8'>
+      <PageHeader />
+      <BalanceCard balance={initialBalance} userName={userName} />
+      <TransactionForm />
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { toast } from 'vanilla-sonner'
+  import 'vanilla-sonner/style.css'
+
+  const userId = 1
+
+  type TransactionAction = 'deposit' | 'withdraw'
+
+  interface BalanceApiResponse {
+    success: boolean
+    balance: number
+    message?: string
+  }
+
+  interface TransactionApiResponse extends BalanceApiResponse {}
+
+  function animateBalance(element: HTMLElement, from: number, to: number, duration: number = 800): void {
+    const startTime = Date.now()
+    const difference = to - from
+
+    function update(): void {
+      const elapsed = Date.now() - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      const easeOut = 1 - Math.pow(1 - progress, 3)
+      const current = from + difference * easeOut
+
+      element.textContent = `$${current.toFixed(2)}`
+
+      if (progress < 1) {
+        requestAnimationFrame(update)
+        return
+      }
+
+      element.classList.add('balance-animate')
+      setTimeout(() => {
+        element.classList.remove('balance-animate')
+      }, 600)
+    }
+
+    requestAnimationFrame(update)
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    const balanceElement = document.getElementById('balance') as HTMLElement
+    const amountInput = document.getElementById('amount') as HTMLInputElement
+    const transactionForm = document.getElementById('transactionForm') as HTMLFormElement
+    const depositBtn = document.getElementById('depositBtn') as HTMLButtonElement
+    const withdrawBtn = document.getElementById('withdrawBtn') as HTMLButtonElement
+
+    async function updateBalance(): Promise<void> {
+      try {
+        const response = await fetch(`/api/savecash/balance.json?userId=${userId}`)
+        const data = (await response.json()) as BalanceApiResponse
+
+        if (!data.success) return
+
+        const currentValue = parseFloat((balanceElement.textContent || '$0.00').replace('$', ''))
+        animateBalance(balanceElement, currentValue, data.balance)
+      } catch (error: unknown) {
+        console.error('Error updating balance:', error)
+      }
+    }
+
+    async function handleTransaction(action: TransactionAction): Promise<void> {
+      const amount = parseFloat(amountInput.value)
+      if (!amount || amount <= 0) {
+        toast.error('Por favor ingresa una cantidad válida')
+        return
+      }
+
+      const endpoint = action === 'deposit' ? '/api/savecash/deposit.json' : '/api/savecash/withdraw.json'
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, amount }),
+        })
+
+        const data = (await response.json()) as TransactionApiResponse
+
+        if (!data.success) {
+          toast.error(data.message ?? 'Error en la transacción')
+          return
+        }
+
+        const actionText = action === 'deposit' ? 'Depósito' : 'Retiro'
+        toast.success(`¡${actionText} exitoso! Nuevo saldo: $${data.balance.toFixed(2)}`)
+        await updateBalance()
+
+        if (transactionForm instanceof HTMLFormElement) {
+          transactionForm.reset()
+        }
+      } catch (error: unknown) {
+        console.error('Error in transaction:', error)
+        toast.error('Error al procesar la transacción')
+      }
+    }
+
+    transactionForm?.addEventListener('submit', e => e.preventDefault())
+    depositBtn?.addEventListener('click', () => handleTransaction('deposit'))
+    withdrawBtn?.addEventListener('click', () => handleTransaction('withdraw'))
+  })
+</script>

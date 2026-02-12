@@ -1,0 +1,17 @@
+---
+interface Props {
+  balance?: number
+  userName?: string
+}
+
+const { balance = 0, userName = 'Usuario' } = Astro.props
+---
+
+<div
+  class='bg-linear-to-br from-indigo-500 to-purple-600 rounded-2xl p-8 text-center text-white mb-8 shadow-2xl w-fit mx-auto px-32'
+  transition:name='balance-card'
+>
+  <p class='text-base opacity-90 m-0'>Saldo Actual</p>
+  <p class='text-6xl font-bold my-2' id='balance'>${balance.toFixed(2)}</p>
+  <p class='text-lg opacity-90 m-0'>{userName}</p>
+</div>

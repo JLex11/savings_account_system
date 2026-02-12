@@ -1,23 +1,219 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+---
+import '../styles/global.css'
+import { ClientRouter } from 'astro:transitions'
+---
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width' />
+    <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+    <link rel='icon' href='/favicon.ico' />
+    <meta name='generator' content={Astro.generator} />
+    <title>Sistema de Ahorro</title>
+    <ClientRouter />
+    <style is:inline>
+      /* Controlar la transición del morfeo del botón */
+      ::view-transition-old(main-cta),
+      ::view-transition-new(main-cta) {
+        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        /* Forzar que las imágenes ocupen todo el espacio disponible */
+        width: 100%;
+        height: 100%;
+        /* Usar object-fit para que escale correctamente */
+        object-fit: fill;
+        object-position: center;
+        /* Permitir que el border-radius se anime */
+        mix-blend-mode: normal;
+      }
+
+      /* Estilo para el grupo de transición - controla cómo se interpola */
+      ::view-transition-group(main-cta) {
+        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        /* Overflow visible para que se vea el border-radius */
+        overflow: visible;
+        /* Forzar que interpole tanto ancho como alto */
+        transform-origin: center center;
+        /* Forzar que el border-radius se interpole correctamente */
+        border-radius: inherit;
+      }
+
+      /* Contenedor de las imágenes */
+      ::view-transition-image-pair(main-cta) {
+        isolation: isolate;
+        /* Forzar posición absoluta para interpolación correcta */
+        position: absolute;
+        inset: 0;
+      }
+
+      /* Transición suave para el título */
+      ::view-transition-old(title-cta),
+      ::view-transition-new(title-cta) {
+        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Animación de entrada para las cards desde abajo */
+      @keyframes slideUpFadeIn {
+        from {
+          transform: translateY(40px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Animación de salida hacia abajo para las cards */
+      @keyframes slideDownFadeOut {
+        from {
+          transform: translateY(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateY(40px);
+          opacity: 0;
+        }
+      }
+
+      /* Card de saldo - aparece desde abajo */
+      ::view-transition-new(balance-card) {
+        animation: 600ms cubic-bezier(0.4, 0, 0.2, 1) 200ms both slideUpFadeIn;
+      }
+
+      /* Card de operación - aparece desde abajo con más delay */
+      ::view-transition-new(operation-card) {
+        animation: 600ms cubic-bezier(0.4, 0, 0.2, 1) 300ms both slideUpFadeIn;
+      }
+
+      /* Cards salen hacia abajo cuando navegas hacia atrás - con más tiempo */
+      ::view-transition-old(balance-card) {
+        animation: 50ms cubic-bezier(0.4, 0, 0.2, 1) both slideDownFadeOut;
+      }
+
+      ::view-transition-old(operation-card) {
+        animation: 50ms cubic-bezier(0.4, 0, 0.2, 1) 40ms both slideDownFadeOut;
+      }
+
+      /* Delay y duración más largos para el main cuando navegas hacia atrás */
+      html.back-navigation::view-transition-old(main-cta) {
+        animation-delay: 250ms;
+        animation-duration: 600ms;
+      }
+
+      html.back-navigation::view-transition-new(main-cta) {
+        animation-delay: 250ms;
+        animation-duration: 600ms;
+      }
+
+      /* Animación para navegación hacia atrás (deslizar derecha) */
+      @keyframes slideOutRight {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+
+      @keyframes slideInLeft {
+        from {
+          transform: translateX(-100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      html.back-navigation::view-transition-old(root) {
+        animation: 400ms cubic-bezier(0.4, 0, 1, 1) both slideOutRight;
+      }
+
+      html.back-navigation::view-transition-new(root) {
+        animation: 400ms cubic-bezier(0, 0, 0.2, 1) both slideInLeft;
+      }
+
+      /* Fade suave para el root en navegación forward */
+      ::view-transition-old(root) {
+        animation: 800ms cubic-bezier(0.4, 0, 0.2, 1) both fade-out;
+      }
+
+      ::view-transition-new(root) {
+        animation: 800ms cubic-bezier(0.4, 0, 0.2, 1) both fade-in;
+      }
+
+      @keyframes fade-out {
+        to {
+          opacity: 0;
+        }
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+      }
+
+      /* ========== ANIMACIONES PARA EL SALDO (JavaScript) ========== */
+
+      /* Animación de bounce para el balance cuando cambia */
+      @keyframes balanceBounce {
+        0% {
+          transform: scale(1);
+        }
+        25% {
+          transform: scale(1.1);
+        }
+        50% {
+          transform: scale(0.95);
+        }
+        75% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .balance-animate {
+        animation: balanceBounce 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    </style>
+    <script is:inline>
+      // Detectar dirección de navegación
+      document.addEventListener('astro:before-preparation', event => {
+        const fromPath = window.location.pathname
+        const toPath = event.to.pathname
+
+        // Si vamos de /savecash/ a / es navegación hacia atrás
+        if (fromPath.includes('/savecash') && toPath === '/') {
+          document.documentElement.classList.add('back-navigation')
+        } else {
+          document.documentElement.classList.remove('back-navigation')
+        }
+      })
+
+      // Limpiar la clase después de la transición
+      document.addEventListener('astro:after-swap', () => {
+        document.documentElement.classList.remove('back-navigation')
+      })
+    </script>
+  </head>
+  <body class='m-0 w-full h-full'>
+    <slot />
+    <ol
+      id='sonner-toast-container'
+      data-position='top-center'
+      data-max-toasts='3'
+      data-rich-colors='true'
+      data-theme='light'
+      data-duration='4000'
+      transition:persist
+    ></ol>
+  </body>
+</html>

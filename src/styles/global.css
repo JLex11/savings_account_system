@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@import "vanilla-sonner/style.css";
+
+/* Sonner Toast Custom Styles */
+:root {
+  --normal-bg: #fff;
+  --normal-border: rgb(0 0 0 / 0.1);
+  --normal-text: #000;
+
+  --success-bg: #d1fae5;
+  --success-border: #10b981;
+  --success-text: #065f46;
+
+  --error-bg: #fee2e2;
+  --error-border: #ef4444;
+  --error-text: #991b1b;
+
+  --info-bg: #dbeafe;
+  --info-border: #3b82f6;
+  --info-text: #1e40af;
+
+  --warning-bg: #fef3c7;
+  --warning-border: #f59e0b;
+  --warning-text: #92400e;
+}
+
+[data-sonner-toaster] {
+  --width: 356px;
+  --toast-bg: var(--normal-bg);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+[data-sonner-toast] {
+  background: var(--toast-bg);
+  border: 1px solid var(--normal-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-sonner-toast][data-type='success'] {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success-text);
+}
+
+[data-sonner-toast][data-type='error'] {
+  background: var(--error-bg);
+  border-color: var(--error-border);
+  color: var(--error-text);
+}
+
+[data-sonner-toast][data-type='info'] {
+  background: var(--info-bg);
+  border-color: var(--info-border);
+  color: var(--info-text);
+}
+
+[data-sonner-toast][data-type='warning'] {
+  background: var(--warning-bg);
+  border-color: var(--warning-border);
+  color: var(--warning-text);
+}
+
+[data-sonner-toast] [data-icon] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+[data-sonner-toast] [data-content] {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+[data-sonner-toast] [data-button] {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+[data-sonner-toast] [data-button]:hover {
+  opacity: 1;
+}

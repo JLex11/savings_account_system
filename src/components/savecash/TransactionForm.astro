@@ -1,0 +1,58 @@
+<div class='bg-white rounded-2xl p-8 shadow-lg max-w-lg mx-auto' transition:name='operation-card'>
+  <h2 class='text-2xl font-semibold text-center mb-6 text-gray-900'>Realizar Operación</h2>
+  <form id='transactionForm' class='flex flex-col'>
+    <label for='amount' class='text-sm font-medium mb-2 text-gray-700'>Cantidad</label>
+    <input
+      type='number'
+      id='amount'
+      name='amount'
+      step='0.01'
+      min='0.01'
+      required
+      placeholder='0.00'
+      class='p-3 border-2 border-gray-200 rounded-lg text-xl mb-6 text-center transition-colors focus:outline-none focus:border-indigo-500'
+    />
+    <div class='grid grid-cols-2 gap-4'>
+      <button
+        type='button'
+        class='bg-linear-to-br from-emerald-500 to-emerald-600 text-white p-4 rounded-lg font-semibold cursor-pointer transition-all duration-200 flex items-center justify-center gap-2 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-500/40'
+        id='depositBtn'
+      >
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          width='20'
+          height='20'
+          viewBox='0 0 24 24'
+          fill='none'
+          stroke='currentColor'
+          stroke-width='2'
+          stroke-linecap='round'
+          stroke-linejoin='round'
+        >
+          <path d='M12 19V5M5 12l7-7 7 7'></path>
+        </svg>
+        Depositar
+      </button>
+      <button
+        type='button'
+        class='bg-linear-to-br from-red-500 to-red-600 text-white p-4 rounded-lg font-semibold cursor-pointer transition-all duration-200 flex items-center justify-center gap-2 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-red-500/40'
+        id='withdrawBtn'
+      >
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          width='20'
+          height='20'
+          viewBox='0 0 24 24'
+          fill='none'
+          stroke='currentColor'
+          stroke-width='2'
+          stroke-linecap='round'
+          stroke-linejoin='round'
+        >
+          <path d='M12 5v14M5 12l7 7 7-7'></path>
+        </svg>
+        Retirar
+      </button>
+    </div>
+  </form>
+</div>
