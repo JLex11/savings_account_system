@@ -1,0 +1,273 @@
+{
+  "info": {
+    "name": "Savings Account API",
+    "description": "API REST para sistema de cuentas de ahorro",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Consultar Saldo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:4321/api/savecash/balance.json?userId=1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "4321",
+          "path": ["api", "savecash", "balance.json"],
+          "query": [
+            {
+              "key": "userId",
+              "value": "1",
+              "description": "ID del usuario"
+            }
+          ]
+        },
+        "description": "Obtiene el saldo actual de una cuenta de ahorro"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:4321/api/savecash/balance.json?userId=1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4321",
+              "path": ["api", "savecash", "balance.json"],
+              "query": [{ "key": "userId", "value": "1" }]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"balance\": 1000,\n  \"userName\": \"John Doe\"\n}"
+        },
+        {
+          "name": "Error - Missing userId",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:4321/api/savecash/balance.json",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4321",
+              "path": ["api", "savecash", "balance.json"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"userId es requerido\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Realizar Depósito",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 1,\n  \"amount\": 500\n}"
+        },
+        "url": {
+          "raw": "http://localhost:4321/api/savecash/deposit.json",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "4321",
+          "path": ["api", "savecash", "deposit.json"]
+        },
+        "description": "Deposita dinero en una cuenta de ahorro"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"amount\": 500\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4321/api/savecash/deposit.json",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4321",
+              "path": ["api", "savecash", "deposit.json"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Depósito realizado exitosamente\",\n  \"balance\": 1500\n}"
+        },
+        {
+          "name": "Error - Invalid Amount",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"amount\": -100\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4321/api/savecash/deposit.json",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4321",
+              "path": ["api", "savecash", "deposit.json"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"La cantidad debe ser mayor que cero\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Realizar Retiro",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 1,\n  \"amount\": 200\n}"
+        },
+        "url": {
+          "raw": "http://localhost:4321/api/savecash/withdraw.json",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "4321",
+          "path": ["api", "savecash", "withdraw.json"]
+        },
+        "description": "Retira dinero de una cuenta de ahorro"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"amount\": 200\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4321/api/savecash/withdraw.json",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4321",
+              "path": ["api", "savecash", "withdraw.json"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Retiro realizado exitosamente\",\n  \"balance\": 1300\n}"
+        },
+        {
+          "name": "Error - Insufficient Balance",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"amount\": 10000\n}"
+            },
+            "url": {
+              "raw": "http://localhost:4321/api/savecash/withdraw.json",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "4321",
+              "path": ["api", "savecash", "withdraw.json"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Saldo insuficiente\"\n}"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4321",
+      "type": "string"
+    }
+  ]
+}
