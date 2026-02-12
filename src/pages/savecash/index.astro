@@ -22,8 +22,7 @@ const userName = balanceData.userName || 'Usuario'
 </Layout>
 
 <script>
-  import { toast } from 'vanilla-sonner'
-  import 'vanilla-sonner/style.css'
+  import { Toaster } from 'vanilla-sonner'
 
   const userId = 1
 
@@ -36,6 +35,38 @@ const userName = balanceData.userName || 'Usuario'
   }
 
   interface TransactionApiResponse extends BalanceApiResponse {}
+
+  type ToastType = 'success' | 'error'
+
+  let toaster: Toaster | null = null
+
+  function ensureToastContainer(): HTMLElement {
+    const containerId = 'sonner-toast-container'
+    let container = document.getElementById(containerId)
+
+    if (container) return container
+
+    container = document.createElement('ol')
+    container.id = containerId
+    container.setAttribute('position', 'bottom-right')
+    container.setAttribute('max-toasts', '3')
+    container.setAttribute('rich-colors', 'true')
+    container.setAttribute('theme', 'light')
+    container.setAttribute('duration', '4000')
+    document.body.appendChild(container)
+
+    return container
+  }
+
+  function showToast(type: ToastType, message: string): void {
+    const container = ensureToastContainer()
+
+    if (!toaster || !toaster.container.isConnected || toaster.container !== container) {
+      toaster = new Toaster()
+    }
+
+    toaster.create({ type, message })
+  }
 
   function animateBalance(element: HTMLElement, from: number, to: number, duration: number = 800): void {
     const startTime = Date.now()
@@ -87,7 +118,7 @@ const userName = balanceData.userName || 'Usuario'
     async function handleTransaction(action: TransactionAction): Promise<void> {
       const amount = parseFloat(amountInput.value)
       if (!amount || amount <= 0) {
-        toast.error('Por favor ingresa una cantidad válida')
+        showToast('error', 'Por favor ingresa una cantidad válida')
         return
       }
 
@@ -103,12 +134,12 @@ const userName = balanceData.userName || 'Usuario'
         const data = (await response.json()) as TransactionApiResponse
 
         if (!data.success) {
-          toast.error(data.message ?? 'Error en la transacción')
+          showToast('error', data.message ?? 'Error en la transacción')
           return
         }
 
         const actionText = action === 'deposit' ? 'Depósito' : 'Retiro'
-        toast.success(`¡${actionText} exitoso! Nuevo saldo: $${data.balance.toFixed(2)}`)
+        showToast('success', `¡${actionText} exitoso! Nuevo saldo: $${data.balance.toFixed(2)}`)
         await updateBalance()
 
         if (transactionForm instanceof HTMLFormElement) {
@@ -116,7 +147,7 @@ const userName = balanceData.userName || 'Usuario'
         }
       } catch (error: unknown) {
         console.error('Error in transaction:', error)
-        toast.error('Error al procesar la transacción')
+        showToast('error', 'Error al procesar la transacción')
       }
     }
 
