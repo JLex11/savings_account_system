@@ -39,6 +39,7 @@ const userName = balanceData.userName || 'Usuario'
   type ToastType = 'success' | 'error'
 
   let toaster: Toaster | null = null
+  let balanceInterval: number | undefined
 
   function ensureToastContainer(): HTMLElement {
     const containerId = 'sonner-toast-container'
@@ -94,6 +95,20 @@ const userName = balanceData.userName || 'Usuario'
     requestAnimationFrame(update)
   }
 
+  function startPolling(updateFn: () => Promise<void>) {
+    if (balanceInterval) clearInterval(balanceInterval)
+    balanceInterval = window.setInterval(updateFn, 5000)
+  }
+
+  function stopPolling() {
+    if (balanceInterval) {
+      clearInterval(balanceInterval)
+      balanceInterval = undefined
+    }
+  }
+
+  document.addEventListener('astro:before-swap', stopPolling)
+
   document.addEventListener('astro:page-load', () => {
     const balanceElement = document.getElementById('balance') as HTMLElement
     const amountInput = document.getElementById('amount') as HTMLInputElement
@@ -109,11 +124,18 @@ const userName = balanceData.userName || 'Usuario'
         if (!data.success) return
 
         const currentValue = parseFloat((balanceElement.textContent || '$0.00').replace('$', ''))
-        animateBalance(balanceElement, currentValue, data.balance)
+        
+        // Only update if balance has changed to avoid unnecessary animations
+        if (Math.abs(currentValue - data.balance) > 0.01) {
+          animateBalance(balanceElement, currentValue, data.balance)
+        }
       } catch (error: unknown) {
         console.error('Error updating balance:', error)
       }
     }
+
+    // Start polling immediately
+    startPolling(updateBalance)
 
     async function handleTransaction(action: TransactionAction): Promise<void> {
       const amount = parseFloat(amountInput.value)
